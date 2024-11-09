@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up or Log In</title>
+    <link rel="stylesheet" href="style_main.css" />
+    <script src="https://kit.fontawesome.com/a891b23653.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h1 id="title">Sign Up</h1>
+            <form>
+                <div class="input-group">
+                    <div class="input-field" id="fullnameField">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" placeholder="Full name" />
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" placeholder="Email" />
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-face-smile"></i>
+                        <input type="file" placeholder="Photo face" />
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-microphone"></i>
+                        <input type="file" placeholder="Record voice" />
+                    </div>
+                    <p>Smarten oneself up</p>
+                </div>
+                <div class="btn-field">
+                    <button type="button" id="signupBtn" class="active">Sign up</button>
+                    <button type="button" id="loginBtn">Log in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let signupBtn = document.getElementById("signupBtn");
+        let loginBtn = document.getElementById("loginBtn");
+        let fullnameField = document.getElementById("fullnameField");
+        let title = document.getElementById("title");
+
+        loginBtn.onclick = function() {
+            fullnameField.style.maxHeight = "0";
+            title.innerHTML = "Log In";
+            loginBtn.classList.add("active"); // Додаємо клас "active" для кнопки Log In
+            loginBtn.classList.remove("disable");
+            signupBtn.classList.add("disable"); // Додаємо клас "disable" для кнопки Sign Up
+            signupBtn.classList.remove("active");
+        };
+
+        signupBtn.onclick = function() {
+            fullnameField.style.maxHeight = "60px";
+            title.innerHTML = "Sign Up";
+            signupBtn.classList.add("active"); // Додаємо клас "active" для кнопки Sign Up
+            signupBtn.classList.remove("disable");
+            loginBtn.classList.add("disable"); // Додаємо клас "disable" для кнопки Log In
+            loginBtn.classList.remove("active");
+        };
+    </script>
+</body>
+
+</html>
