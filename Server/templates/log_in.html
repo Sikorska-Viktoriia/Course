@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In</title>
+  </head>
+
+  <body>
+    <h1>Log In</h1>
+    <form method="POST">
+      <!-- форма відправляється методом POST -->
+      {{ form.hidden_tag() }}
+      <!-- ховає токен CSRF для безпеки -->
+
+      <!-- Поле для email -->
+      <label for="email">{{ form.email.label }}</label> {{ form.email() }}
+      <!-- Виводимо поле введення email -->
+      <br />
+
+      <!-- Поле для пароля -->
+      <label for="password">{{ form.password.label }}</label> {{ form.password()
+      }}
+      <!-- Виводимо поле введення пароля -->
+      <br />
+
+      <!-- Кнопка відправлення форми -->
+      {{ form.submit() }}
+      <!-- Кнопка для надсилання -->
+    </form>
+
+    <!-- Виведення flash-повідомлень -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <ul>
+      {% for category, message in messages %}
+      <li style="color: red">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %}
+  </body>
+</html>

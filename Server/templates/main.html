@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up or Log In</title>
+    <link rel="stylesheet" href="/static/style_main.css" />
+
+    <script
+      src="https://kit.fontawesome.com/a891b23653.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="form-box">
+        <h1 id="title">Sign Up</h1>
+        <!-- Основна форма -->
+        <form
+          id="authForm"
+          action="/submit"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="input-group">
+            <div class="input-field" id="fullnameField">
+              <i class="fa-solid fa-user"></i>
+              <input
+                type="text"
+                name="fullname"
+                placeholder="Full name"
+                required
+              />
+            </div>
+
+            <div class="input-field">
+              <i class="fa-solid fa-envelope"></i>
+              <input type="email" name="email" placeholder="Email" required />
+            </div>
+
+            <div class="input-field">
+              <i class="fa-solid fa-face-smile"></i>
+              <input type="file" name="photo" placeholder="Photo face" />
+            </div>
+
+            <div class="input-field">
+              <i class="fa-solid fa-microphone"></i>
+              <input
+                type="file"
+                name="voice_record"
+                placeholder="Record voice"
+              />
+            </div>
+            <p>Smarten oneself up</p>
+          </div>
+          <div class="btn-field">
+            <button type="button" id="signupBtn" class="active">Sign up</button>
+            <button type="button" id="loginBtn">Log in</button>
+            <button type="submit" id="submitBtn">Submit</button>
+            <!-- Кнопка для відправки -->
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let signupBtn = document.getElementById("signupBtn");
+      let loginBtn = document.getElementById("loginBtn");
+      let fullnameField = document.getElementById("fullnameField");
+      let title = document.getElementById("title");
+      let authForm = document.getElementById("authForm");
+
+      // Логіка для кнопки "Log In"
+      loginBtn.onclick = function () {
+        fullnameField.style.maxHeight = "0";
+        title.innerHTML = "Log In";
+        loginBtn.classList.add("active");
+        loginBtn.classList.remove("disable");
+        signupBtn.classList.add("disable");
+        signupBtn.classList.remove("active");
+        authForm.action = "/login"; // змінити URL для входу
+      };
+
+      // Логіка для кнопки "Sign Up"
+      signupBtn.onclick = function () {
+        fullnameField.style.maxHeight = "60px";
+        title.innerHTML = "Sign Up";
+        signupBtn.classList.add("active");
+        signupBtn.classList.remove("disable");
+        loginBtn.classList.add("disable");
+        loginBtn.classList.remove("active");
+        authForm.action = "/submit"; // повернутися до реєстрації
+      };
+
+      // Відправка форми при натисканні кнопки "Submit"
+      document.getElementById("submitBtn").onclick = function () {
+        // Перевірка, чи форма заповнена
+        if (authForm.checkValidity()) {
+          authForm.submit(); // відправка форми
+        } else {
+          alert("Будь ласка, заповніть всі обов'язкові поля.");
+        }
+      };
+    </script>
+  </body>
+</html>

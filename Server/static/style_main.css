@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', 'sans-serif';
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(rgba(2, 70, 138, 0.341), rgba(138, 106, 2, 0.341)), url('/static/autumn.jpg');
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+.form-box {
+    width: 90%;
+    max-width: 450px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 50px 60px 70px;
+    text-align: center;
+    border-radius: 10px;
+    /* Додаємо округлість до форм */
+}
+
+.form-box h1 {
+    font-size: 30px;
+    margin-bottom: 40px;
+    color: #b50000;
+    position: relative;
+}
+
+.form-box h1::after {
+    content: '';
+    width: 30px;
+    height: 4px;
+    border-radius: 3px;
+    background: #b50000;
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.input-field {
+    background: #eaeaee;
+    margin: 15px 0;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    max-height: 65px;
+    transition: max-height 0.5s;
+    overflow: hidden;
+}
+
+input {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    padding: 18px 15px;
+}
+
+.input-field i {
+    margin-left: 15px;
+    color: #999;
+}
+
+form p {
+    text-align: left;
+    font-size: 13px;
+}
+
+form p a {
+    text-decoration: none;
+    color: #b50000;
+}
+
+.btn-field {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn-field button {
+    width: 48%;
+    height: 40px;
+    border-radius: 20px;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-weight: 600;
+}
+
+
+/* Активна кнопка */
+
+.btn-field button.active {
+    background: #b50000;
+    color: #fff;
+}
+
+
+/* Неактивна кнопка */
+
+.btn-field button.disable {
+    background: #eaeaee;
+    color: #555;
+}
+
+.input-group {
+    height: 320px;
+}
+
+
+/* Стиль для кнопки submit */
+
+#submitBtn {
+    width: 100%;
+    height: 45px;
+    background: #c59a00;
+    color: white;
+    border-radius: 25px;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+
+/* При наведенні на кнопку submit */
+
+#submitBtn:hover {
+    background: #fec909;
+}
+
+
+/* Мобільні пристрої */
+
+@media screen and (max-width: 480px) {
+    .form-box {
+        padding: 40px 30px 50px;
+        width: 90%;
+    }
+    .form-box h1 {
+        font-size: 24px;
+    }
+    .btn-field button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    #submitBtn {
+        width: 100%;
+        margin-top: 20px;
+    }
+}
