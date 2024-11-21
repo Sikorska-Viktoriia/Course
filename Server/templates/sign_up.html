@@ -1,0 +1,28 @@
+<!-- sign_up.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <form
+    action="{{ url_for('signup') }}"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    {{ form.hidden_tag() }}
+    <!-- захист від CSRF атак -->
+
+    <label for="fullname">Full Name</label> {{
+    form.fullname(class="form-control") }}
+
+    <label for="email">Email</label> {{ form.email(class="form-control") }}
+
+    <label for="password">Password</label> {{
+    form.password(class="form-control") }}
+
+    <label for="photo">Upload Photo</label>
+    <input type="file" name="photo" accept="image/*" class="form-control" />
+
+    <label for="voice">Upload Voice</label>
+    <input type="file" name="voice" accept="audio/*" class="form-control" />
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</html>

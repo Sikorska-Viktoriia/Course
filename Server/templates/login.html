@@ -1,0 +1,18 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <form action="{{ url_for('login') }}" method="POST">
+    {{ form.hidden_tag() }}
+    <!-- захист від CSRF атак -->
+
+    <label for="email">Email</label> {{ form.email(class="form-control") }}
+
+    <label for="password">Password</label> {{
+    form.password(class="form-control") }}
+
+    <label for="auth_method">Authentication Method</label> {{
+    form.auth_method(class="form-control") }}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</html>

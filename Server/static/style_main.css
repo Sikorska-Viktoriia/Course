@@ -16,16 +16,15 @@
 
 .form-box {
     width: 90%;
-    max-width: 450px;
+    max-width: 500px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: #fff;
-    padding: 50px 60px 70px;
+    padding: 50px 60px 100px;
     text-align: center;
     border-radius: 10px;
-    /* Додаємо округлість до форм */
 }
 
 .form-box h1 {
@@ -85,7 +84,7 @@ form p a {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    margin-top: 300px;
 }
 
 .btn-field button {
@@ -99,16 +98,10 @@ form p a {
     font-weight: 600;
 }
 
-
-/* Активна кнопка */
-
 .btn-field button.active {
     background: #b50000;
     color: #fff;
 }
-
-
-/* Неактивна кнопка */
 
 .btn-field button.disable {
     background: #eaeaee;
@@ -118,9 +111,6 @@ form p a {
 .input-group {
     height: 320px;
 }
-
-
-/* Стиль для кнопки submit */
 
 #submitBtn {
     width: 100%;
@@ -135,15 +125,9 @@ form p a {
     transition: background 0.3s ease;
 }
 
-
-/* При наведенні на кнопку submit */
-
 #submitBtn:hover {
     background: #fec909;
 }
-
-
-/* Мобільні пристрої */
 
 @media screen and (max-width: 480px) {
     .form-box {
@@ -161,4 +145,99 @@ form p a {
         width: 100%;
         margin-top: 20px;
     }
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 35px;
+}
+
+.password-field i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+}
+
+.password-field i:hover {
+    color: #b50000;
+}
+
+.password-field.show-password input {
+    background-color: #fff;
+}
+
+.password-field.show-password i {
+    color: #c59a00;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 30px;
+}
+
+.password-wrapper i {
+    position: absolute;
+    top: 50%;
+    left: 300px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.password-wrapper input.show-password {
+    font-family: Arial, sans-serif;
+    letter-spacing: 0;
+}
+
+.auth-method-label {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.auth-method-label input {
+    margin-right: 5px;
+}
+
+#photoField {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-height: 400px;
+    /* Встановіть бажану максимальну висоту */
+    transition: max-height 0.5s;
+    overflow: hidden;
+}
+
+#photoField video {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+}
+
+#start-camera-btn,
+#capture-btn {
+    margin-top: 10px;
+    background-color: #c59a00;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#start-camera-btn:hover,
+#capture-btn:hover {
+    background-color: #e5c708e7;
 }
