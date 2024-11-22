@@ -64,8 +64,8 @@
                 id="authMethodPhoto"
                 required
               />
-              <label for="authMethodPhoto" class="auth-method-label"
-                >Face Authentication</label
+              <label for="authMethodPhoto" class="auth-method-label">
+                Face Authentication </label
               ><br />
               <input
                 type="radio"
@@ -74,9 +74,9 @@
                 id="authMethodVoice"
                 required
               />
-              <label for="authMethodVoice" class="auth-method-label"
-                >Voice Authentication</label
-              >
+              <label for="authMethodVoice" class="auth-method-label">
+                Voice Authentication
+              </label>
             </div>
 
             <div class="input-field" id="photoField" style="display: none">
@@ -141,24 +141,37 @@
       };
 
       document.getElementById("authForm").onsubmit = function (event) {
-        if (authForm.checkValidity()) {
-          if (authForm.action.includes("/login")) {
-            const authMethod = document.querySelector(
-              'input[name="auth_method"]:checked'
-            ).value;
-            if (authMethod === "photo") {
-              const photoData = document.getElementById("photo").value;
-              if (!photoData) {
-                alert("Будь ласка, зробіть фото для автентифікації.");
-                event.preventDefault();
-                return;
-              }
-            }
+        const authMethod = document.querySelector(
+          'input[name="auth_method"]:checked'
+        );
+        const photoInput = document.getElementById("photo");
+        const fileInput = document.getElementById("fileInput");
+        const voiceFile = document.querySelector('input[name="voice_record"]')
+          .files[0];
+
+        // Якщо метод автентифікації - фото, перевіряємо чи є фото
+        if (authMethod && authMethod.value === "photo") {
+          if (!photoInput.value && !fileInput.files[0]) {
+            alert("Please upload a photo for authentication.");
+            event.preventDefault();
+            return;
           }
-        } else {
-          alert("Будь ласка, заповніть всі обов'язкові поля.");
-          event.preventDefault();
         }
+
+        // Якщо метод автентифікації - голос, перевіряємо чи є голосовий файл
+        if (authMethod && authMethod.value === "voice" && !voiceFile) {
+          alert("Please record your voice for authentication.");
+          event.preventDefault();
+          return;
+        }
+
+        // Якщо форма валідна, дозволяємо відправку
+        if (authForm.checkValidity()) {
+          return;
+        }
+
+        alert("Please fill in all required fields.");
+        event.preventDefault();
       };
 
       const togglePassword = document.getElementById("togglePassword");
@@ -195,9 +208,32 @@
       const photoInput = document.getElementById("photo");
       let stream = null;
 
+      // Функція для конвертації base64 у файл
+      function base64ToFile(base64String, filename) {
+        const byteCharacters = atob(base64String.split(",")[1]);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset++) {
+          const byteNumber = byteCharacters.charCodeAt(offset);
+          byteArrays.push(byteNumber);
+        }
+
+        const byteArray = new Uint8Array(byteArrays);
+        const file = new Blob([byteArray], {
+          type: "image/png",
+        });
+        const fileObject = new File([file], filename, {
+          type: "image/png",
+        });
+
+        return fileObject;
+      }
+
       startCameraBtn.addEventListener("click", function () {
         navigator.mediaDevices
-          .getUserMedia({ video: true })
+          .getUserMedia({
+            video: true,
+          })
           .then(function (mediaStream) {
             stream = mediaStream;
             video.srcObject = stream;
@@ -217,56 +253,22 @@
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = canvas.toDataURL("image/png");
-        photoInput.value = imageData;
+        const file = base64ToFile(imageData, "user_photo.png");
+        // Додаємо файл до input
+        const fileInputElement = document.createElement("input");
+        fileInputElement.type = "file";
+        fileInputElement.name = "photo";
+        fileInputElement.files = [file];
+        document.forms["authForm"].appendChild(fileInputElement);
 
+        // Остановлюємо камеру та ховаємо відео
         stream.getTracks().forEach((track) => track.stop());
         video.style.display = "none";
         captureBtn.style.display = "none";
         startCameraBtn.style.display = "inline-block";
 
-        alert("Фото зроблено успішно!");
+        document.getElementById("preview").src = imageData;
       });
-
-      function resizeImage() {
-        const fileInput = document.getElementById("fileInput");
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function (event) {
-          const img = new Image();
-          img.onload = function () {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            const maxSize = 500;
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-              if (width > maxSize) {
-                height *= maxSize / width;
-                width = maxSize;
-              }
-            } else {
-              if (height > maxSize) {
-                width *= maxSize / height;
-                height = maxSize;
-              }
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            const resizedDataUrl = canvas.toDataURL("image/png");
-            document.getElementById("photo").value = resizedDataUrl;
-          };
-
-          img.src = event.target.result;
-        };
-
-        reader.readAsDataURL(file);
-      }
     </script>
   </body>
 </html>

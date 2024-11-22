@@ -22,6 +22,14 @@ pymysql.install_as_MySQLdb()
 # Ініціалізація Flask додатку з вказаним шляхом до шаблонів
 app = Flask(__name__, template_folder='/home/vika/Курсова_робота/Server/templates', static_folder='/home/vika/Курсова_робота/Server/static')
 
+# Налаштування папки для завантаження файлів
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)  # Створіть папку, якщо вона не існує
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 # Конфігурації
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://sikorska:tailcat12@localhost/client_authentication'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -42,7 +50,9 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def process_image(file):
     """Обробка зображення перед збереженням"""
@@ -75,20 +85,28 @@ class User(db.Model):
     photo_encoding = db.Column(db.PickleType, nullable=True)
 
 
-    def __repr__(self):
-        return f'<User {self.fullname}>'
+    def __init__(self, fullname, email, password, auth_method, photo, voice_record=None):
+        self.fullname = fullname
+        self.email = email
+        self.password = password
+        self.auth_method = auth_method
+        self.photo = photo
+        self.voice_record = voice_record
 
 class SignupForm(FlaskForm):
     fullname = StringField('Full Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
+    auth_method = SelectField('Метод автентифікації', choices=[('photo', 'Фото'), ('voice', 'Голос')], coerce=str)
 
 class LoginForm(FlaskForm):
+    fullname = StringField('Full Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     auth_method = SelectField('Authentication Method', choices=[('photo', 'Photo'), ('voice', 'Voice')], validators=[DataRequired()])
     submit = SubmitField('Log In')
+   
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -105,6 +123,8 @@ def signup():
             logging.debug("Neither photo nor voice uploaded")
             return redirect(url_for('signup'))
         
+        photo_encoding = None  # Значення за замовчуванням для photo_encoding
+
         if photo:
             processed_image = process_image(photo)
             if processed_image:
@@ -118,11 +138,7 @@ def signup():
             else:
                flash('Помилка при обробці фото.', 'error')
                return redirect(url_for('signup'))
-        else:
-            photo_encoding = None
-
         
-
         if voice:
             if not allowed_file(voice.filename):
                 flash('Будь ласка, завантажте правильний голосовий файл.', 'error')
@@ -148,8 +164,9 @@ def signup():
            fullname=fullname,
            email=email,
            password=generate_password_hash(password),
-          photo_received=True,
-          photo_encoding=photo_encoding
+           photo_received=True,
+           photo_encoding=photo_encoding,
+           voice_filename=voice_filename  # Додаємо ім'я голосового файлу
         )
 
         try:
@@ -228,61 +245,48 @@ def submit():
     email = request.form.get('email')
     password = request.form.get('password')
     auth_method = request.form.get('auth_method')
-    file = request.files.get('photo')  # Отримання файлу з форми
-    
+    photo = request.files.get('photo')
+    voice_record = request.files.get('voice_record')
+
+    # Check for required fields
     if not fullname or not email or not password or not auth_method:
-        flash("Усі поля обов'язкові для заповнення!", "error")
-        return redirect(url_for('signup'))
-    
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        flash("Цей email вже зареєстровано!", "error")
-        return redirect(url_for('signup'))
-    
+        return "Please fill in all required fields", 400
+
+    # Encrypt password (use default method: pbkdf2:sha256)
     hashed_password = generate_password_hash(password)
+
+    # Prepare file paths
     photo_path = None
-    
-    # Обробка фото
-    if file:
-        processed_image = process_image(file)
-        if processed_image:
-            photo_path = f"uploads/{email}_photo.jpg"
-            processed_image.save(os.path.join('static', photo_path))  # Збереження у папку static
-        else:
-            flash("Неможливо обробити зображення!", "error")
-            return redirect(url_for('signup'))
+    voice_path = None
 
+    # Save photo if provided
+    if photo and allowed_file(photo.filename):
+        photo_filename = 'photo_' + email + '.jpg'
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
+        photo.save(photo_path)
+
+    # Save voice record if provided
+    if voice_record and allowed_file(voice_record.filename):
+        voice_filename = 'voice_' + email + '.wav'
+        voice_path = os.path.join(app.config['UPLOAD_FOLDER'], voice_filename)
+        voice_record.save(voice_path)
+
+    # Create a new user and save to the database
     new_user = User(
-    fullname=fullname,
-    email=email,
-    password=hashed_password,
-    auth_method=auth_method,
-    photo_filename=photo_path  # Використовуйте, якщо зберігаєте шлях до файлу
-)
+        fullname=fullname,
+        email=email,
+        password=hashed_password,  # Store the hashed password
+        auth_method=auth_method,
+        photo=photo_path,  # Save the photo file path
+        voice_record=voice_path  # Save the voice file path
+    )
 
-    
-    try:
-        db.session.add(new_user)
-        db.session.commit()
-        flash('Користувача успішно зареєстровано!', 'success')
-        return redirect(url_for('login'))
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Сталася помилка під час реєстрації: {str(e)}", 'error')
-        return redirect(url_for('signup'))
+    db.session.add(new_user)
+    db.session.commit()
 
+    # Redirect to the login page after successful registration
+    return redirect(url_for('login'))
 
-
-
-def process_image(file):
-    try:
-        image = Image.open(file)
-        image = image.convert('RGB')
-        image.thumbnail((1024, 1024))  # Максимальний розмір 1024x1024
-        return image
-    except Exception as e:
-        logging.error(f"Помилка при обробці зображення: {e}")
-        return None
 
 
 

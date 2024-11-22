@@ -1,18 +1,48 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <form action="{{ url_for('login') }}" method="POST">
-    {{ form.hidden_tag() }}
-    <!-- захист від CSRF атак -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
 
-    <label for="email">Email</label> {{ form.email(class="form-control") }}
+  <body>
+    <form action="{{ url_for('login') }}" method="POST" id="loginForm">
+      <label for="email">Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        required
+        value="{{ request.form['email'] if request.method == 'POST' else '' }}"
+      />
 
-    <label for="password">Password</label> {{
-    form.password(class="form-control") }}
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Enter your password"
+        required
+        value="{{ request.form['password'] if request.method == 'POST' else '' }}"
+      />
 
-    <label for="auth_method">Authentication Method</label> {{
-    form.auth_method(class="form-control") }}
+      <button type="submit">Log In</button>
+    </form>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (event) {
+          const emailField = document.getElementById("email");
+          const passwordField = document.getElementById("password");
+
+          if (!emailField.value || !passwordField.value) {
+            alert("Please fill in all required fields");
+            event.preventDefault(); // prevent form submission
+          }
+        });
+    </script>
+  </body>
 </html>
